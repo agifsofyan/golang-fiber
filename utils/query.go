@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"example/gorest/models"
 	"math"
 	"strconv"
 	"time"
@@ -17,6 +18,10 @@ type Result struct {
 	Page  int
 	Last  float64
 	Limit int64
+}
+
+type Dynamic struct {
+	Value interface{}
 }
 
 func Search(text string, opt []string) bson.M {
@@ -97,4 +102,30 @@ func Paginate(c *fiber.Ctx, collect *mongo.Collection, filter interface{}, sorts
 	}
 
 	return cursor, result, ctx, nil
+}
+
+func FindOne(c *fiber.Ctx, collection *mongo.Collection, field, value string) (int, string, error, interface{}) {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	var findResult *mongo.SingleResult
+
+	if field == "_id" {
+		valueId, _ := primitive.ObjectIDFromHex(value)
+		findResult = collection.FindOne(ctx, bson.M{field: valueId})
+	} else {
+		findResult = collection.FindOne(ctx, bson.M{field: value})
+	}
+
+	var decoded models.Genre
+
+	if err := findResult.Err(); err != nil {
+		return fiber.StatusBadGateway, "Data Not Found", err, nil
+	}
+
+	err := findResult.Decode(&decoded)
+	if err != nil {
+		return fiber.StatusBadGateway, "Error decode data", err, nil
+	}
+
+	return fiber.StatusOK, "Success", err, decoded
 }

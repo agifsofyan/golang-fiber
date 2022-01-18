@@ -9,5 +9,6 @@ import (
 func GenreRoute(route fiber.Router) {
 	routes := route.Group("genre")
 	routes.Get("/", controllers.Index)
+	routes.Get("/:id", controllers.Detail)
 	routes.Post("/", controllers.Add)
 }

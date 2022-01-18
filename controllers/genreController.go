@@ -4,7 +4,6 @@ import (
 	"context"
 	"example/gorest/models"
 	"example/gorest/utils"
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -60,7 +59,7 @@ func Add(c *fiber.Ctx) error {
 	genre := new(models.Genre)
 
 	if err := c.BodyParser(genre); err != nil {
-		log.Println(err)
+		// log.Println(err)
 		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body", err)
 	}
 
@@ -75,4 +74,17 @@ func Add(c *fiber.Ctx) error {
 		"success": true,
 		"message": "Genre inserted successfully",
 	})
+}
+
+func Detail(c *fiber.Ctx) error {
+	var collection = models.GenreTable()
+
+	id := c.Params("id")
+	code, msg, err, genre := utils.FindOne(c, collection, "_id", id)
+
+	if err != nil {
+		return utils.FailResponse(c, code, msg, err)
+	}
+
+	return utils.SuccessResponse(c, genre)
 }

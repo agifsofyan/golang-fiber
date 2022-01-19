@@ -4,23 +4,55 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type Error struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+type HTTPError struct {
+	Success bool   `json:"success" example:false`
+	Code    int    `json:"code" example:"400"`
+	Message string `json:"message" example:"status bad request"`
 }
 
-func FailResponse(c *fiber.Ctx, status int, msg string, err error) error {
-	response := fiber.Map{
-		"success": false,
-		"message": msg,
-		"error":   err,
+type PaginateResponse struct {
+	Paginate map[string]string `json:"paginate"`
+}
+
+type HTTPSuccess struct {
+	Success bool              `json:"success" example:true`
+	Code    int               `json:"code" example:"200"`
+	Message string            `json:"message" example:"success get data"`
+	Data    map[string]string `json:"data"`
+}
+
+type HTTPSuccessLogin struct {
+	AccessToken string `json:"access_token" example: AscdcSdwsddsdsdsnlk.dsdscscscs.wdwdwcwc`
+}
+
+func FailResponse(c *fiber.Ctx, code int, msg string) error {
+	response := HTTPError{
+		Success: false,
+		Code:    code,
+		Message: msg,
 	}
 
 	c.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
-	return c.Status(status).JSON(response)
+	return c.Status(code).JSON(response)
 }
 
-func SuccessResponse(c *fiber.Ctx, result interface{}) error {
+func SuccessResponse(c *fiber.Ctx, data fiber.Map, inserted bool) error {
+	code := fiber.StatusOK
+	if inserted == true {
+		code = fiber.StatusCreated
+	}
+
+	data["code"] = code
+
 	c.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
-	return c.Status(fiber.StatusOK).JSON(result)
+	return c.Status(code).JSON(data)
+}
+
+func SuccessLoginResponse(c *fiber.Ctx, token string) error {
+	response := HTTPSuccessLogin{
+		AccessToken: token,
+	}
+
+	c.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	return c.Status(200).JSON(response)
 }

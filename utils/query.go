@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"example/gorest/models"
 	"math"
 	"strconv"
 	"time"
@@ -60,8 +59,12 @@ func Paginate(c *fiber.Ctx, collect *mongo.Collection, filter interface{}, sorts
 		last = 1
 	}
 
+	if limit == 1 {
+		last -= 1
+	}
+
 	sortVal := -1
-	if sorts[1] == "desc" {
+	if sorts[1] == "asc" {
 		sortVal = 1
 	}
 
@@ -104,28 +107,35 @@ func Paginate(c *fiber.Ctx, collect *mongo.Collection, filter interface{}, sorts
 	return cursor, result, ctx, nil
 }
 
-func FindOne(c *fiber.Ctx, collection *mongo.Collection, field, value string) (int, string, error, interface{}) {
+func Detailed(c *fiber.Ctx, collection *mongo.Collection, modalName string, match bson.M) (*mongo.Cursor, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	var findResult *mongo.SingleResult
+	// if field == "_id" {
+	// 	valueId, _ := primitive.ObjectIDFromHex(value)
+	// 	findResult = collection.FindOne(ctx, bson.M{field: valueId})
+	// } else {
+	// 	findResult = collection.FindOne(ctx, bson.M{field: value})
+	// }
 
-	if field == "_id" {
-		valueId, _ := primitive.ObjectIDFromHex(value)
-		findResult = collection.FindOne(ctx, bson.M{field: valueId})
-	} else {
-		findResult = collection.FindOne(ctx, bson.M{field: value})
+	opt := []bson.M{
+		{
+			"$match": match,
+		},
+		{
+			"$lookup": bson.M{
+				"from":         modalName + "s",
+				"localField":   modalName,
+				"foreignField": "_id",
+				"as":           modalName,
+			},
+		},
 	}
 
-	var decoded models.Genre
+	cursor, err := collection.Aggregate(ctx, opt)
 
-	if err := findResult.Err(); err != nil {
-		return fiber.StatusBadGateway, "Data Not Found", err, nil
-	}
-
-	err := findResult.Decode(&decoded)
 	if err != nil {
-		return fiber.StatusBadGateway, "Error decode data", err, nil
+		return nil, err
 	}
 
-	return fiber.StatusOK, "Success", err, decoded
+	return cursor, nil
 }

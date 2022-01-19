@@ -13,6 +13,10 @@ type Genre struct {
 	Slug string             `json:"slug,omitempty" bson:"slug,omitempty"`
 }
 
+type SwaggerInsertGenre struct {
+	Name string `json:"name,omitempty" bson:"name,omitempty"`
+}
+
 func GenreTable() *mongo.Collection {
 	return config.MI.DB.Collection("genres")
 }

@@ -1,0 +1,242 @@
+basePath: /api/v1
+definitions:
+  models.SwaggerInsertGenre:
+    properties:
+      name:
+        type: string
+    type: object
+  models.SwaggerInsertMovie:
+    properties:
+      description:
+        type: string
+      genre:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
+  models.SwaggerLogin:
+    properties:
+      email:
+        type: string
+      pass:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Rest APIs golang - fiber.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "2.0"
+paths:
+  /auth:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwaggerLogin'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login
+      tags:
+      - auth
+  /genres:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: search by s
+        in: query
+        name: s
+        type: string
+      - description: number page from limited data
+        in: query
+        name: page
+        type: string
+      - description: count rendered data
+        in: query
+        name: limit
+        type: string
+      - description: key sort the data
+        in: query
+        name: sortby
+        type: string
+      - description: value sort the data
+        in: query
+        name: sortval
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Show all genre
+      tags:
+      - genres
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add new genre
+        in: body
+        name: genre
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwaggerInsertGenre'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Add new genre
+      tags:
+      - genres
+  /genres/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Genre ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Show an genre
+      tags:
+      - genres
+  /movies:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: search by s
+        in: query
+        name: s
+        type: string
+      - description: number page from limited data
+        in: query
+        name: page
+        type: string
+      - description: count rendered data
+        in: query
+        name: limit
+        type: string
+      - description: key sort the data
+        in: query
+        name: sortby
+        type: string
+      - description: value sort the data
+        in: query
+        name: sortval
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Show all movie
+      tags:
+      - movies
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add new movie
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwaggerInsertMovie'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Add new movie
+      tags:
+      - movies
+  /movies/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Update movie
+      tags:
+      - movies
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Show an movie
+      tags:
+      - movies
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update movie
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwaggerInsertMovie'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Update movie
+      tags:
+      - movies
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

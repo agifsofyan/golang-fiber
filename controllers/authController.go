@@ -11,61 +11,64 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// models.SwaggerLogin godoc
+// @Summary      Login
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        auth  body     models.SwaggerLogin  true  "Login"
+// @Router       /auth [post]
 func Login(c *fiber.Ctx) error {
 	var collection = models.UserTable()
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	type request struct {
-		Email string `json:"email"`
-		Pass  string `json:"pass"`
-	}
-
-	var body request
+	var body models.SwaggerLogin
 	var user models.User
 
 	err := c.BodyParser(&body)
 	if err != nil {
-		return utils.FailResponse(c, fiber.StatusBadRequest, "Cannot parse JSON", err)
+		return utils.FailResponse(c, fiber.StatusBadRequest, "Cannot parse JSON")
 	}
 
 	// Throws Unauthorized error
 	if body.Email == "" || body.Pass == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "email & password wajib"})
+		return utils.FailResponse(c, fiber.StatusBadRequest, "email & password wajib")
 	}
 
 	findResult := collection.FindOne(ctx, bson.M{"email": body.Email})
 
 	if err := findResult.Err(); err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "User Not Found", err)
+		return utils.FailResponse(c, fiber.StatusNotFound, "User Not Found")
 	}
 
 	errno := findResult.Decode(&user)
 	if errno != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "Error decode user", err)
+		return utils.FailResponse(c, fiber.StatusNotFound, "Error decode user")
 	}
 
 	compare := utils.Compare(user.Pass, body.Pass)
 
 	if compare != true {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Password not match"})
+		return utils.FailResponse(c, fiber.StatusBadRequest, "Password not match")
 	}
 
 	token, err := utils.GenerateToken(user)
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate token"})
+		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to generate token")
 	}
 
-	return c.JSON(token)
+	return utils.SuccessLoginResponse(c, token["access_token"])
 }
 
 func Accessible(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{"message": "Cannot Access"})
+	return utils.FailResponse(c, fiber.StatusNotAcceptable, "Cannot Access")
 }
 
 func Restricted(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	name := claims["name"].(string)
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Welcome " + name})
+
+	return utils.SuccessResponse(c, fiber.Map{"message": "Welcome " + name}, false)
 }

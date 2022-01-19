@@ -26,6 +26,12 @@ type Movie struct {
 	CreatedAt   time.Time          `json:"created_at,omitempty" bson:"created_at,omitempty"`
 }
 
+type SwaggerInsertMovie struct {
+	Title       string               `json:"title,omitempty" bson:"title,omitempty"`
+	Genre       []primitive.ObjectID `json:"genre,omitempty" bson:"genre,omitempty"`
+	Description string               `json:"description,omitempty" bson:"description,omitempty"`
+}
+
 func MovieTable() *mongo.Collection {
 	return config.MI.DB.Collection("movies")
 }

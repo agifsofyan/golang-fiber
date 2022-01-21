@@ -9,30 +9,34 @@ import (
 	"example/gorest/routes"
 	"example/gorest/utils"
 
+	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/joho/godotenv"
+
+	_ "example/gorest/docs"
 )
 
-func setupRoutes(app *fiber.App) {
-	app.Get("/", func(c *fiber.Ctx) error {
-		c.Accepts("application/json") // "application/json"
+// @title           Swagger Example API
+// @version         2.0
+// @description     Rest APIs golang - fiber.
+// @termsOfService  http://swagger.io/terms/
 
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"success": true,
-			"message": "This is root endpoint",
-		})
-	})
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
 
-	api := app.Group("/api").Group("/v1")
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-	routes.MovieRoute(api)
-	routes.GenreRoute(api)
-	routes.UserRoute(api)
-}
+// @host      localhost:3000
+// @BasePath  /api/v1
 
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
 func main() {
 	if os.Getenv("APP_ENV") != "production" {
 		err := godotenv.Load()
@@ -46,7 +50,10 @@ func main() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 
+	app.Get("/swagger/*", swagger.HandlerDefault) // default
+
 	api := app.Group("/api").Group("/v1")
+
 	routes.AuthRoute(api) // Route without authorization
 
 	// JWT Middleware
@@ -61,7 +68,7 @@ func main() {
 				code = e.Code
 			}
 
-			return utils.FailResponse(c, code, "Unauthorized", err)
+			return utils.FailResponse(c, code, "Unauthorized")
 		},
 	}))
 
@@ -89,4 +96,21 @@ func main() {
 		log.Fatal("Error app failed to start")
 		panic(err)
 	}
+}
+
+func setupRoutes(app *fiber.App) {
+	app.Get("/", func(c *fiber.Ctx) error {
+		c.Accepts("application/json") // "application/json"
+
+		return utils.SuccessResponse(c, fiber.Map{
+			"success": true,
+			"message": "This is root endpoint",
+		}, false)
+	})
+
+	api := app.Group("/api").Group("/v1")
+
+	routes.MovieRoute(api)
+	routes.GenreRoute(api)
+	routes.UserRoute(api)
 }

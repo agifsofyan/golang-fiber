@@ -17,6 +17,17 @@ type User struct {
 	IsAdmin   bool               `json:"is_admin,omitempty" bson:"is_admin,omitempty"`
 }
 
+type SwaggerLogin struct {
+	Email string `json:"email,omitempty" bson:"email,omitempty"`
+	Pass  string `json:"pass,omitempty" bson:"pass,omitempty"`
+}
+
+type SwaggerRegis struct {
+	Name  string `json:"name,omitempty" bson:"name,omitempty"`
+	Email string `json:"email,omitempty" bson:"email,omitempty"`
+	Pass  string `json:"pass,omitempty" bson:"pass,omitempty"`
+}
+
 func UserTable() *mongo.Collection {
 	return config.MI.DB.Collection("users")
 }

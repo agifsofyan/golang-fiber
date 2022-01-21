@@ -4,7 +4,6 @@ import (
 	"context"
 	"example/gorest/models"
 	"example/gorest/utils"
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,8 +16,7 @@ func Register(c *fiber.Ctx) error {
 	user := new(models.User)
 
 	if err := c.BodyParser(user); err != nil {
-		log.Println(err)
-		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body", err)
+		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
 	}
 
 	hash, _ := utils.Generate(user.Pass)
@@ -28,24 +26,28 @@ func Register(c *fiber.Ctx) error {
 
 	result, err := collection.InsertOne(ctx, user)
 	if err != nil {
-		return utils.FailResponse(c, fiber.StatusInternalServerError, "user failed to insert", err)
+		return utils.FailResponse(c, fiber.StatusInternalServerError, "user failed to insert")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"data":    result,
+	return utils.SuccessResponse(c, fiber.Map{
 		"success": true,
 		"message": "user inserted successfully",
-	})
+		"data":    result,
+	}, true)
 }
 
 func Me(c *fiber.Ctx) error {
 	user, code, msg, err := utils.ShowMe(c)
 
 	if err != nil {
-		return utils.FailResponse(c, code, msg, err)
+		return utils.FailResponse(c, code, msg)
 	}
 
-	return utils.SuccessResponse(c, user)
+	return utils.SuccessResponse(c, fiber.Map{
+		"success": true,
+		"message": "success get data",
+		"data":    user,
+	}, false)
 }
 
 func ByEmail(c *fiber.Ctx, email string) error {
@@ -55,11 +57,12 @@ func ByEmail(c *fiber.Ctx, email string) error {
 
 	findResult := collection.FindOne(ctx, bson.M{"email": email})
 	if err := findResult.Err(); err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "user Not Found", err)
+		return utils.FailResponse(c, fiber.StatusNotFound, "user Not Found")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return utils.SuccessResponse(c, fiber.Map{
 		"success": true,
+		"message": "success get data",
 		"data":    findResult,
-	})
+	}, false)
 }

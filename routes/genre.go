@@ -7,7 +7,7 @@ import (
 )
 
 func GenreRoute(route fiber.Router) {
-	routes := route.Group("genre")
+	routes := route.Group("genres")
 	routes.Get("/", controllers.Index)
 	routes.Get("/:id", controllers.Detail)
 	routes.Post("/", controllers.Add)

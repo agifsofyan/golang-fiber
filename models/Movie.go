@@ -11,6 +11,7 @@ import (
 type InsertMovie struct {
 	ID          primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
 	Title       string               `json:"title,omitempty" bson:"title,omitempty"`
+	Img         string               `json:"img,omitempty" bson:"img,omitempty"`
 	Slug        string               `json:"slug,omitempty" bson:"slug,omitempty"`
 	Genre       []primitive.ObjectID `json:"genre,omitempty" bson:"genre,omitempty"`
 	Description string               `json:"description,omitempty" bson:"description,omitempty"`
@@ -20,6 +21,7 @@ type InsertMovie struct {
 type Movie struct {
 	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Title       string             `json:"title,omitempty" bson:"title,omitempty"`
+	Img         string             `json:"img,omitempty" bson:"img,omitempty"`
 	Slug        string             `json:"slug,omitempty" bson:"slug,omitempty"`
 	Genre       []Genre            `json:"genre,omitempty" bson:"genre,omitempty"`
 	Description string             `json:"description,omitempty" bson:"description,omitempty"`
@@ -29,6 +31,7 @@ type Movie struct {
 type SwaggerInsertMovie struct {
 	Title       string               `json:"title,omitempty" bson:"title,omitempty"`
 	Genre       []primitive.ObjectID `json:"genre,omitempty" bson:"genre,omitempty"`
+	Img         string               `json:"img,omitempty" bson:"img,omitempty"`
 	Description string               `json:"description,omitempty" bson:"description,omitempty"`
 }
 

@@ -119,13 +119,21 @@ func GetMovie(c *fiber.Ctx) error {
 func AddMovie(c *fiber.Ctx) error {
 	var collection = models.MovieTable()
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
 	movie := new(models.InsertMovie)
 
 	if err := c.BodyParser(movie); err != nil {
 		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
 	}
 
+	file, msg := utils.Upload(c, "fileUpload")
+
+	if file == nil {
+		return utils.FailResponse(c, fiber.StatusBadRequest, msg)
+	}
+
 	movie.Slug = utils.Slugify(movie.Title)
+	movie.Img = file["relativePath"].(string) // map[string]interface{}
 	movie.CreatedAt = time.Now()
 	result, err := collection.InsertOne(ctx, movie)
 	if err != nil {

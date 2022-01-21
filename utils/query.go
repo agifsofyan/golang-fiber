@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -138,4 +139,39 @@ func Detailed(c *fiber.Ctx, collection *mongo.Collection, modalName string, matc
 	}
 
 	return cursor, nil
+}
+
+func Upload(c *fiber.Ctx, nameFile string) (fiber.Map, string) {
+	file, err := c.FormFile(nameFile)
+
+	if err != nil {
+		return nil, "fail get the file"
+	}
+
+	// Get buffer from file
+	buffer, err := file.Open()
+	if err != nil {
+		return nil, "buffer file failed"
+	}
+	defer buffer.Close()
+
+	fileName := file.Filename
+	contentType := file.Header["Content-Type"][0]
+	fileZise := file.Size
+	dir := "temp"
+	filePath := fmt.Sprintf("./%s/%s", dir, fileName)
+
+	err = c.SaveFile(file, filePath)
+
+	if err != nil {
+		return nil, "cannot save the file"
+	}
+
+	return fiber.Map{
+		"name":         fileName,
+		"size":         fileZise,
+		"type":         contentType,
+		"path":         dir,
+		"relativePath": filePath,
+	}, ""
 }

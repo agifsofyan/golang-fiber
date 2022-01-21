@@ -1,2 +1,2 @@
 # gorest
-Create Movies service with GO and Mongo DB
+Create Movies service with GO, Fiber, Mongo DB and Swagger

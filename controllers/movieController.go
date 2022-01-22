@@ -4,7 +4,6 @@ import (
 	"context"
 	"example/gorest/models"
 	"example/gorest/utils"
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -79,33 +78,21 @@ func GetMovies(c *fiber.Ctx) error {
 // @Router       /movies/{id} [get]
 func GetMovie(c *fiber.Ctx) error {
 	var collection = models.MovieTable()
-	var movie models.Movie
-	// ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	match := bson.M{}
-	match["title"] = c.Params("id")
-	// objId, _ := primitive.ObjectIDFromHex(c.Params("id"))
-	// findResult := collection.FindOne(ctx, bson.M{"_id": objId})
+	id, _ := primitive.ObjectIDFromHex(c.Params("id"))
+	match := bson.M{"_id": id}
+	opt := bson.M{"field": "genre", "ref": "genres"}
 
-	findResult, err := utils.Detailed(c, collection, "movie", match)
+	findResult, msg := utils.Detailed(c, collection, match, opt)
 
-	log.Println("findResult::", findResult)
-
-	if err := findResult.Err(); err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "Movie Not Found")
-	}
-
-	err = findResult.Decode(&movie)
-
-	log.Println("movie::", err)
-	if err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "Movie Not Found")
+	if findResult == nil {
+		return utils.FailResponse(c, fiber.StatusBadRequest, msg)
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
 		"success": true,
 		"message": "Success get data",
-		"data":    movie,
+		"data":    findResult,
 	}, false)
 }
 

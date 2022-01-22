@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"time"
@@ -108,37 +109,22 @@ func Paginate(c *fiber.Ctx, collect *mongo.Collection, filter interface{}, sorts
 	return cursor, result, ctx, nil
 }
 
-func Detailed(c *fiber.Ctx, collection *mongo.Collection, modalName string, match bson.M) (*mongo.Cursor, error) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+func Detailed(c *fiber.Ctx, collection *mongo.Collection, match bson.M, ref bson.M) (interface{}, string) {
+	var result bson.M
 
-	// if field == "_id" {
-	// 	valueId, _ := primitive.ObjectIDFromHex(value)
-	// 	findResult = collection.FindOne(ctx, bson.M{field: valueId})
-	// } else {
-	// 	findResult = collection.FindOne(ctx, bson.M{field: value})
-	// }
-
-	opt := []bson.M{
-		{
-			"$match": match,
-		},
-		{
-			"$lookup": bson.M{
-				"from":         modalName + "s",
-				"localField":   modalName,
-				"foreignField": "_id",
-				"as":           modalName,
-			},
-		},
+	err := collection.FindOne(context.TODO(), match).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, "error no document"
+		}
 	}
-
-	cursor, err := collection.Aggregate(ctx, opt)
 
 	if err != nil {
-		return nil, err
+		log.Println("err::", err)
+		return nil, "error in aggregate"
 	}
 
-	return cursor, nil
+	return result, ""
 }
 
 func Upload(c *fiber.Ctx, nameFile string) (fiber.Map, string) {

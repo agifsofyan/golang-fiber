@@ -113,4 +113,5 @@ func setupRoutes(app *fiber.App) {
 	routes.MovieRoute(api)
 	routes.GenreRoute(api)
 	routes.UserRoute(api)
+	routes.FileRoute(api)
 }

@@ -21,10 +21,6 @@ type Result struct {
 	Limit int64
 }
 
-type Dynamic struct {
-	Value interface{}
-}
-
 func Search(text string, opt []string) bson.M {
 	field := bson.M{
 		"$regex": primitive.Regex{
@@ -109,43 +105,67 @@ func Paginate(c *fiber.Ctx, collect *mongo.Collection, filter interface{}, sorts
 	return cursor, result, ctx, nil
 }
 
-func Detailed(c *fiber.Ctx, collection *mongo.Collection, match bson.M, ref bson.M) (interface{}, string) {
-	var result bson.M
+func FindById(collection *mongo.Collection, id string, ref bson.M) (interface{}, string, int) {
+	var result []bson.M
 
-	err := collection.FindOne(context.TODO(), match).Decode(&result)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, "error no document"
-		}
+	// err := collection.FindOne(context.TODO(), match).Decode(&result)
+	// if err != nil {
+	// 	if err == mongo.ErrNoDocuments {
+	// 		return nil, "error no document"
+	// 	}
+	// }
+
+	_id, _ := primitive.ObjectIDFromHex(id)
+	matchStage := bson.D{primitive.E{Key: "$match", Value: bson.D{primitive.E{Key: "_id", Value: _id}}}}
+
+	opt := mongo.Pipeline{matchStage}
+
+	if ref != nil && ref["collection"] != nil && ref["field"] != nil {
+		lookupStage := bson.D{primitive.E{
+			Key: "$lookup",
+			Value: bson.D{
+				primitive.E{Key: "from", Value: ref["collection"]},
+				primitive.E{Key: "localField", Value: ref["field"]},
+				primitive.E{Key: "foreignField", Value: "_id"},
+				primitive.E{Key: "as", Value: ref["field"]},
+			},
+		}}
+
+		opt = mongo.Pipeline{matchStage, lookupStage}
 	}
 
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	x, err := collection.Aggregate(ctx, opt)
+
 	if err != nil {
-		log.Println("err::", err)
-		return nil, "error in aggregate"
+		return nil, err.Error(), 400
 	}
 
-	return result, ""
+	if err = x.All(ctx, &result); err != nil {
+		return nil, err.Error(), 400
+	}
+
+	if len(result) <= 0 {
+		return nil, "data not found", 404
+	}
+
+	return result[0], "", 200
 }
 
-func Upload(c *fiber.Ctx, nameFile string) (fiber.Map, string) {
-	file, err := c.FormFile(nameFile)
+func Upload(c *fiber.Ctx, dir string, inputName string) (fiber.Map, string) {
+	file, err := c.FormFile(inputName)
 
 	if err != nil {
 		return nil, "fail get the file"
 	}
 
-	// Get buffer from file
-	buffer, err := file.Open()
-	if err != nil {
-		return nil, "buffer file failed"
-	}
-	defer buffer.Close()
-
 	fileName := file.Filename
 	contentType := file.Header["Content-Type"][0]
 	fileZise := file.Size
-	dir := "temp"
 	filePath := fmt.Sprintf("./%s/%s", dir, fileName)
+
+	log.Println("path:", filePath)
 
 	err = c.SaveFile(file, filePath)
 
@@ -154,10 +174,9 @@ func Upload(c *fiber.Ctx, nameFile string) (fiber.Map, string) {
 	}
 
 	return fiber.Map{
-		"name":         fileName,
-		"size":         fileZise,
-		"type":         contentType,
-		"path":         dir,
-		"relativePath": filePath,
+		"name":     fileName,
+		"size":     fileZise,
+		"type":     contentType,
+		"fullPath": filePath,
 	}, ""
 }

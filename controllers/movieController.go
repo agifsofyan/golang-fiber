@@ -79,14 +79,13 @@ func GetMovies(c *fiber.Ctx) error {
 func GetMovie(c *fiber.Ctx) error {
 	var collection = models.MovieTable()
 
-	id, _ := primitive.ObjectIDFromHex(c.Params("id"))
-	match := bson.M{"_id": id}
-	opt := bson.M{"field": "genre", "ref": "genres"}
+	id := c.Params("id")
+	lookup := bson.M{"collection": "genres", "field": "genre"}
 
-	findResult, msg := utils.Detailed(c, collection, match, opt)
+	findResult, msg, code := utils.FindById(collection, id, lookup)
 
-	if findResult == nil {
-		return utils.FailResponse(c, fiber.StatusBadRequest, msg)
+	if code != 200 {
+		return utils.FailResponse(c, code, msg)
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
@@ -113,14 +112,9 @@ func AddMovie(c *fiber.Ctx) error {
 		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
 	}
 
-	file, msg := utils.Upload(c, "fileUpload")
-
-	if file == nil {
-		return utils.FailResponse(c, fiber.StatusBadRequest, msg)
-	}
-
 	movie.Slug = utils.Slugify(movie.Title)
-	movie.Img = file["relativePath"].(string) // map[string]interface{}
+	// movie.Img = file["relativePath"].(string) // map[string]interface{}
+	// movie.Img = filePath // map[string]interface{}
 	movie.CreatedAt = time.Now()
 	result, err := collection.InsertOne(ctx, movie)
 	if err != nil {

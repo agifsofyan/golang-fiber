@@ -107,14 +107,26 @@ func AddMovie(c *fiber.Ctx) error {
 	var collection = models.MovieTable()
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	movieInput := new(models.InsertMovie)
-	movie := new(models.Movie)
+	movie := new(models.InsertMovie)
 
-	if err := c.BodyParser(movieInput); err != nil {
+	if err := c.BodyParser(movie); err != nil {
 		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
 	}
 
-	err, path, filename := utils.WriteBase64ToFile(movieInput.Img)
+	type Request struct {
+		File string `json:"file"`
+	}
+
+	var body Request
+
+	err := c.BodyParser(&body)
+	if err := c.BodyParser(movie); err != nil {
+		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
+	}
+
+	file := fmt.Sprint(body) // convert to string
+
+	err, path, filename := utils.WriteBase64ToFile(file)
 	if err != nil {
 		return utils.FailResponse(c, 400, string(err.Error()))
 	}
@@ -128,11 +140,10 @@ func AddMovie(c *fiber.Ctx) error {
 	img["path"] = fmt.Sprintf("%s/%s", path, filename)
 	img["thumbnail"] = thumb
 
-	movie.Title = movieInput.Title
 	movie.Slug = utils.Slugify(movie.Title)
 	movie.Img = img
-	movie.Description = movieInput.Description
 	movie.CreatedAt = time.Now()
+
 	result, err := collection.InsertOne(ctx, movie)
 	if err != nil {
 		return utils.FailResponse(c, fiber.StatusInternalServerError, "Movie failed to insert")

@@ -9,20 +9,20 @@ import (
 )
 
 type InsertMovie struct {
-	ID          primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
-	Title       string               `json:"title,omitempty" bson:"title,omitempty"`
-	Img         string               `json:"img,omitempty" bson:"img,omitempty"`
-	Slug        string               `json:"slug,omitempty" bson:"slug,omitempty"`
-	Genre       []primitive.ObjectID `json:"genre,omitempty" bson:"genre,omitempty"`
-	Description string               `json:"description,omitempty" bson:"description,omitempty"`
-	CreatedAt   time.Time            `json:"created_at,omitempty" bson:"created_at,omitempty"`
+	ID          primitive.ObjectID     `json:"_id,omitempty" bson:"_id,omitempty"`
+	Title       string                 `json:"title,omitempty" bson:"title,omitempty"`
+	Slug        string                 `json:"slug,omitempty" bson:"slug,omitempty"`
+	Img         map[string]interface{} `json:"img,omitempty" bson:"img,omitempty"`
+	Genre       []primitive.ObjectID   `json:"genre,omitempty" bson:"genre,omitempty"`
+	Description string                 `json:"description,omitempty" bson:"description,omitempty"`
+	CreatedAt   time.Time              `json:"created_at,omitempty" bson:"created_at,omitempty"`
 }
 
 type Movie struct {
 	ID          primitive.ObjectID     `json:"_id,omitempty" bson:"_id,omitempty"`
 	Title       string                 `json:"title,omitempty" bson:"title,omitempty"`
-	Img         map[string]interface{} `json:"img,omitempty" bson:"img,omitempty"`
 	Slug        string                 `json:"slug,omitempty" bson:"slug,omitempty"`
+	Img         map[string]interface{} `json:"img,omitempty" bson:"img,omitempty"`
 	Genre       []Genre                `json:"genre,omitempty" bson:"genre,omitempty"`
 	Description string                 `json:"description,omitempty" bson:"description,omitempty"`
 	CreatedAt   time.Time              `json:"created_at,omitempty" bson:"created_at,omitempty"`
@@ -31,7 +31,7 @@ type Movie struct {
 type SwaggerInsertMovie struct {
 	Title       string               `json:"title,omitempty" bson:"title,omitempty"`
 	Genre       []primitive.ObjectID `json:"genre,omitempty" bson:"genre,omitempty"`
-	Img         string               `json:"img,omitempty" bson:"img,omitempty"`
+	File        string               `json:"file,omitempty" bson:"file,omitempty"`
 	Description string               `json:"description,omitempty" bson:"description,omitempty"`
 }
 

@@ -359,6 +359,9 @@ var doc = `{
                 "description": {
                     "type": "string"
                 },
+                "file": {
+                    "type": "string"
+                },
                 "genre": {
                     "type": "array",
                     "items": {

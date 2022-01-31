@@ -9,6 +9,8 @@ definitions:
     properties:
       description:
         type: string
+      file:
+        type: string
       genre:
         items:
           type: string

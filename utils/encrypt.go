@@ -57,10 +57,10 @@ func Base64ToByte(b string) ([]byte, error) {
 
 func FromBase64(b string) (string, string) {
 	var typeFile string
-	if strings.Contains(b, "jpeg") {
-		typeFile = "jpeg"
-	} else {
+	if !strings.Contains(b, "jpeg") {
 		typeFile = "png"
+	} else {
+		typeFile = "jpeg"
 	}
 
 	return typeFile, b[strings.IndexByte(b, ',')+1:]

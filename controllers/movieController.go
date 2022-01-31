@@ -4,6 +4,7 @@ import (
 	"context"
 	"example/gorest/models"
 	"example/gorest/utils"
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -106,15 +107,31 @@ func AddMovie(c *fiber.Ctx) error {
 	var collection = models.MovieTable()
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	movie := new(models.InsertMovie)
+	movieInput := new(models.InsertMovie)
+	movie := new(models.Movie)
 
-	if err := c.BodyParser(movie); err != nil {
+	if err := c.BodyParser(movieInput); err != nil {
 		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
 	}
 
+	err, path, filename := utils.WriteBase64ToFile(movieInput.Img)
+	if err != nil {
+		return utils.FailResponse(c, 400, string(err.Error()))
+	}
+
+	thumb, err := utils.CreateThumbnail(path, filename)
+	if err != nil {
+		return utils.FailResponse(c, 400, string(err.Error()))
+	}
+
+	img := make(map[string]interface{})
+	img["path"] = fmt.Sprintf("%s/%s", path, filename)
+	img["thumbnail"] = thumb
+
+	movie.Title = movieInput.Title
 	movie.Slug = utils.Slugify(movie.Title)
-	// movie.Img = file["relativePath"].(string) // map[string]interface{}
-	// movie.Img = filePath // map[string]interface{}
+	movie.Img = img
+	movie.Description = movieInput.Description
 	movie.CreatedAt = time.Now()
 	result, err := collection.InsertOne(ctx, movie)
 	if err != nil {

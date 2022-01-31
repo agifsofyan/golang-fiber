@@ -2,15 +2,10 @@ package controllers
 
 import (
 	"bufio"
-	"encoding/base64"
 	"example/gorest/utils"
 	"fmt"
-	"image"
-	"image/png"
 	"io/ioutil"
-	"log"
 	"os"
-	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -32,8 +27,6 @@ func FileEncode(c *fiber.Ctx) error {
 }
 
 func FileDecode(c *fiber.Ctx) error {
-	// file := c.FormValue("file")
-
 	input := new(bson.M)
 
 	if err := c.BodyParser(input); err != nil {
@@ -42,31 +35,19 @@ func FileDecode(c *fiber.Ctx) error {
 
 	form := fmt.Sprint(input) // convert to string
 
-	typeFile, strFile := utils.FromBase64(form)
-
-	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(strFile))
-
-	m, formatSring, err := image.Decode(reader)
+	err, path, fileName := utils.WriteBase64ToFile(form)
 
 	if err != nil {
 		return utils.FailResponse(c, 400, string(err.Error()))
 	}
 
-	bounds := m.Bounds()
-	log.Println(bounds, "<->", formatSring)
+	relativePath := fmt.Sprintf("%s/%s", path, fileName)
 
-	pngFilename := "./storage/upload/test." + typeFile
-	f, err := os.OpenFile(pngFilename, os.O_WRONLY|os.O_CREATE, 07777)
+	thumb, err := utils.CreateThumbnail(path, fileName)
 
 	if err != nil {
 		return utils.FailResponse(c, 400, string(err.Error()))
 	}
 
-	err = png.Encode(f, m)
-
-	if err != nil {
-		return utils.FailResponse(c, 400, string(err.Error()))
-	}
-
-	return utils.SuccessResponse(c, fiber.Map{"pngFilename": pngFilename}, false)
+	return utils.SuccessResponse(c, fiber.Map{"upload": relativePath, "thumb": thumb}, false)
 }

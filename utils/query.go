@@ -2,8 +2,6 @@ package utils
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"math"
 	"strconv"
 	"time"
@@ -151,32 +149,4 @@ func FindById(collection *mongo.Collection, id string, ref bson.M) (interface{},
 	}
 
 	return result[0], "", 200
-}
-
-func Upload(c *fiber.Ctx, dir string, inputName string) (fiber.Map, string) {
-	file, err := c.FormFile(inputName)
-
-	if err != nil {
-		return nil, "fail get the file"
-	}
-
-	fileName := file.Filename
-	contentType := file.Header["Content-Type"][0]
-	fileZise := file.Size
-	filePath := fmt.Sprintf("./%s/%s", dir, fileName)
-
-	log.Println("path:", filePath)
-
-	err = c.SaveFile(file, filePath)
-
-	if err != nil {
-		return nil, "cannot save the file"
-	}
-
-	return fiber.Map{
-		"name":     fileName,
-		"size":     fileZise,
-		"type":     contentType,
-		"fullPath": filePath,
-	}, ""
 }

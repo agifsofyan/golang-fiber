@@ -150,9 +150,9 @@ func AddMovie(c *fiber.Ctx) error {
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
-		"success": true,
-		"message": "Movie inserted successfully",
-		"data":    result,
+		"success":    true,
+		"message":    "Movie inserted successfully",
+		"insertedID": result.InsertedID,
 	}, true)
 }
 

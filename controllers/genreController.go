@@ -92,9 +92,9 @@ func Add(c *fiber.Ctx) error {
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
-		"success": true,
-		"message": "Genre inserted successfully",
-		"data":    result,
+		"success":    true,
+		"message":    "Genre inserted successfully",
+		"insertedID": result.InsertedID,
 	}, true)
 }
 

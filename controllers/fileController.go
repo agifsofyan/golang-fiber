@@ -11,6 +11,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+type formFile struct {
+	File string `json:"file,omitempty" bson:"file,omitempty"`
+}
+
+// @Summary     Base64 ENcode file
+// @ID 			file.upload
+// @Tags        files
+// @Accept  	multipart/form-data
+// @Produce     json
+// @Param   	file formData file true  "Encode the uploaded file"
+// @Router      /files [post]
 func FileEncode(c *fiber.Ctx) error {
 	file, msg := utils.Upload(c, "storage/temp", "file")
 

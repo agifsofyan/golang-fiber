@@ -50,11 +50,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 
-	app.Get("/swagger/*", swagger.HandlerDefault) // default
-
-	api := app.Group("/api").Group("/v1")
-
-	routes.AuthRoute(api) // Route without authorization
+	freeRoute(app) // without Auth
 
 	// JWT Middleware
 	app.Use(jwtware.New(jwtware.Config{
@@ -83,7 +79,7 @@ func main() {
 	// }
 	// app := fiber.New(cfg)
 
-	setupRoutes(app) // Route wit authorization
+	restrictRoute(app) // Route wit authorization
 
 	app.Get("/api/v1/auth/restricted", controllers.Restricted)
 
@@ -98,7 +94,16 @@ func main() {
 	}
 }
 
-func setupRoutes(app *fiber.App) {
+func freeRoute(app *fiber.App) {
+	app.Get("/swagger/*", swagger.HandlerDefault) // default
+
+	api := app.Group("/api").Group("/v1")
+
+	routes.AuthRoute(api) // Route without authorization
+	routes.FileRoute(api)
+}
+
+func restrictRoute(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		c.Accepts("application/json") // "application/json"
 
@@ -113,5 +118,4 @@ func setupRoutes(app *fiber.App) {
 	routes.MovieRoute(api)
 	routes.GenreRoute(api)
 	routes.UserRoute(api)
-	routes.FileRoute(api)
 }

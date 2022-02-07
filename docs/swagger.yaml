@@ -56,6 +56,23 @@ paths:
       summary: Login
       tags:
       - auth
+  /files:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: file.upload
+      parameters:
+      - description: Encode the uploaded file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      summary: Base64 ENcode file
+      tags:
+      - files
   /genres:
     get:
       consumes:

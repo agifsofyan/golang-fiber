@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"golang-fiber/gorest/controllers"
+	"golang-fiber/controllers"
 
 	"github.com/gofiber/fiber/v2"
 )

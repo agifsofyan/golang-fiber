@@ -25,7 +25,7 @@ definitions:
       pass:
         type: string
     type: object
-host: localhost:3000
+host: localhost:8080
 info:
   contact:
     email: support@swagger.io

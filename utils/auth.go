@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"golang-fiber/gorest/models"
+	"golang-fiber/models"
 	"log"
 	"os"
 	"time"

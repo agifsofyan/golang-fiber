@@ -4,10 +4,10 @@ import (
 	"log"
 	"os"
 
-	"golang-fiber/gorest/config"
-	"golang-fiber/gorest/controllers"
-	"golang-fiber/gorest/routes"
-	"golang-fiber/gorest/utils"
+	"golang-fiber/config"
+	"golang-fiber/controllers"
+	"golang-fiber/routes"
+	"golang-fiber/utils"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
@@ -16,7 +16,7 @@ import (
 	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/joho/godotenv"
 
-	_ "golang-fiber/gorest/docs"
+	_ "golang-fiber/docs"
 )
 
 // @title           Swagger MOvies CRUD API

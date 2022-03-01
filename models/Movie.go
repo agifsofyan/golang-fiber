@@ -1,7 +1,7 @@
 package models
 
 import (
-	"golang-fiber/gorest/config"
+	"golang-fiber/config"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"

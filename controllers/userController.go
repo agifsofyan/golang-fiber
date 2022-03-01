@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"context"
-	"golang-fiber/gorest/models"
-	"golang-fiber/gorest/utils"
+	"golang-fiber/models"
+	"golang-fiber/utils"
 	"time"
 
 	"github.com/gofiber/fiber/v2"

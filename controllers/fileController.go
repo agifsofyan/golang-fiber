@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"bufio"
-	"example/gorest/utils"
 	"fmt"
+	"golang-fiber/gorest/utils"
 	"io/ioutil"
 	"os"
 

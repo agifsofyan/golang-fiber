@@ -2,7 +2,7 @@ package utils
 
 import (
 	"context"
-	"example/gorest/models"
+	"golang-fiber/gorest/models"
 	"time"
 
 	"github.com/gofiber/fiber/v2"

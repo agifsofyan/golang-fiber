@@ -36,7 +36,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Swagger Example API
+  title: Swagger Movies CRUD API
   version: "2.0"
 paths:
   /auth:

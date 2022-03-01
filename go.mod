@@ -1,4 +1,4 @@
-module golang-fiber/gorest
+module golang-fiber
 
 go 1.17
 

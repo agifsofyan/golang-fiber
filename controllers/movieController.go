@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"context"
-	"example/gorest/models"
-	"example/gorest/utils"
 	"fmt"
+	"golang-fiber/gorest/models"
+	"golang-fiber/gorest/utils"
 	"time"
 
 	"github.com/gofiber/fiber/v2"

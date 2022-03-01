@@ -1,4 +1,4 @@
-module example/gorest
+module golang-fiber/gorest
 
 go 1.17
 

@@ -434,7 +434,7 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "localhost:3000",
 	BasePath:    "/api/v1",
 	Schemes:     []string{},
-	Title:       "Swagger Example API",
+	Title:       "Swagger Movies CRUD API",
 	Description: "Rest APIs golang - fiber.",
 }
 

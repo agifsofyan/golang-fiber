@@ -106,13 +106,6 @@ func Paginate(c *fiber.Ctx, collect *mongo.Collection, filter interface{}, sorts
 func FindById(collection *mongo.Collection, id string, ref bson.M) (interface{}, string, int) {
 	var result []bson.M
 
-	// err := collection.FindOne(context.TODO(), match).Decode(&result)
-	// if err != nil {
-	// 	if err == mongo.ErrNoDocuments {
-	// 		return nil, "error no document"
-	// 	}
-	// }
-
 	_id, _ := primitive.ObjectIDFromHex(id)
 	matchStage := bson.D{primitive.E{Key: "$match", Value: bson.D{primitive.E{Key: "_id", Value: _id}}}}
 

@@ -1,6 +1,37 @@
 {
 	"comment": "",
 	"ignore": "test",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "QAz1jjQoRzMBrdcQkeparfG6Bnk=",
+			"path": "golang.org/x/crypto",
+			"revision": "86341886e2925764dc890ad96c141a1bc76043af",
+			"revisionTime": "2022-02-14T19:20:43Z"
+		},
+		{
+			"checksumSHA1": "oCH3J96RWvO8W4xjix47PModpio=",
+			"path": "golang.org/x/crypto/bcrypt",
+			"revision": "86341886e2925764dc890ad96c141a1bc76043af",
+			"revisionTime": "2022-02-14T19:20:43Z"
+		},
+		{
+			"checksumSHA1": "q+XI9g44wd9mYvf3S5Wo8YZjAus=",
+			"path": "golang.org/x/crypto/blowfish",
+			"revision": "86341886e2925764dc890ad96c141a1bc76043af",
+			"revisionTime": "2022-02-14T19:20:43Z"
+		},
+		{
+			"checksumSHA1": "l0PSNsHny95abjTJfIoj9Ts9khs=",
+			"path": "golang.org/x/crypto/ocsp",
+			"revision": "86341886e2925764dc890ad96c141a1bc76043af",
+			"revisionTime": "2022-02-14T19:20:43Z"
+		},
+		{
+			"checksumSHA1": "1MGpGDQqnUoRpv7VEcQrXOBydXE=",
+			"path": "golang.org/x/crypto/pbkdf2",
+			"revision": "86341886e2925764dc890ad96c141a1bc76043af",
+			"revisionTime": "2022-02-14T19:20:43Z"
+		}
+	],
 	"rootPath": "github.com/agifsofyan/golang-fiber"
 }

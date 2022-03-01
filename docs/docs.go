@@ -58,6 +58,31 @@ var doc = `{
                 "responses": {}
             }
         },
+        "/files": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "Base64 ENcode file",
+                "operationId": "file.upload",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Encode the uploaded file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/genres": {
             "get": {
                 "security": [
@@ -357,6 +382,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "type": "string"
+                },
+                "file": {
                     "type": "string"
                 },
                 "genre": {

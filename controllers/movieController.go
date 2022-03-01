@@ -4,7 +4,7 @@ import (
 	"context"
 	"example/gorest/models"
 	"example/gorest/utils"
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -79,33 +79,20 @@ func GetMovies(c *fiber.Ctx) error {
 // @Router       /movies/{id} [get]
 func GetMovie(c *fiber.Ctx) error {
 	var collection = models.MovieTable()
-	var movie models.Movie
-	// ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	match := bson.M{}
-	match["title"] = c.Params("id")
-	// objId, _ := primitive.ObjectIDFromHex(c.Params("id"))
-	// findResult := collection.FindOne(ctx, bson.M{"_id": objId})
+	id := c.Params("id")
+	lookup := bson.M{"collection": "genres", "field": "genre"}
 
-	findResult, err := utils.Detailed(c, collection, "movie", match)
+	findResult, msg, code := utils.FindById(collection, id, lookup)
 
-	log.Println("findResult::", findResult)
-
-	if err := findResult.Err(); err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "Movie Not Found")
-	}
-
-	err = findResult.Decode(&movie)
-
-	log.Println("movie::", err)
-	if err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "Movie Not Found")
+	if code != 200 {
+		return utils.FailResponse(c, code, msg)
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
 		"success": true,
 		"message": "Success get data",
-		"data":    movie,
+		"data":    findResult,
 	}, false)
 }
 
@@ -126,24 +113,46 @@ func AddMovie(c *fiber.Ctx) error {
 		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
 	}
 
-	file, msg := utils.Upload(c, "fileUpload")
-
-	if file == nil {
-		return utils.FailResponse(c, fiber.StatusBadRequest, msg)
+	type Request struct {
+		File string `json:"file"`
 	}
 
+	var body Request
+
+	err := c.BodyParser(&body)
+	if err := c.BodyParser(movie); err != nil {
+		return utils.FailResponse(c, fiber.StatusBadRequest, "Failed to parse body")
+	}
+
+	file := fmt.Sprint(body) // convert to string
+
+	err, path, filename := utils.WriteBase64ToFile(file)
+	if err != nil {
+		return utils.FailResponse(c, 400, string(err.Error()))
+	}
+
+	thumb, err := utils.CreateThumbnail(path, filename)
+	if err != nil {
+		return utils.FailResponse(c, 400, string(err.Error()))
+	}
+
+	img := make(map[string]interface{})
+	img["path"] = fmt.Sprintf("%s/%s", path, filename)
+	img["thumbnail"] = thumb
+
 	movie.Slug = utils.Slugify(movie.Title)
-	movie.Img = file["relativePath"].(string) // map[string]interface{}
+	movie.Img = img
 	movie.CreatedAt = time.Now()
+
 	result, err := collection.InsertOne(ctx, movie)
 	if err != nil {
 		return utils.FailResponse(c, fiber.StatusInternalServerError, "Movie failed to insert")
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
-		"success": true,
-		"message": "Movie inserted successfully",
-		"data":    result,
+		"success":    true,
+		"message":    "Movie inserted successfully",
+		"insertedID": result.InsertedID,
 	}, true)
 }
 

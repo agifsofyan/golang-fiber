@@ -28,11 +28,13 @@ type CustomClaims struct {
 	UserInfo
 }
 
+var expired time.Duration = time.Hour * 72
+
 func GenerateToken(user models.User) (map[string]string, error) {
 	claims := CustomClaims{
 		jwt.StandardClaims{
 			Issuer:    os.Getenv("APPLICATION_NAME"),
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(expired).Unix(),
 		},
 		UserInfo{
 			user.ID,

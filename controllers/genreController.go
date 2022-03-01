@@ -4,12 +4,10 @@ import (
 	"context"
 	"example/gorest/models"
 	"example/gorest/utils"
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // @Summary      Show all genre
@@ -94,9 +92,9 @@ func Add(c *fiber.Ctx) error {
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
-		"success": true,
-		"message": "Genre inserted successfully",
-		"data":    result,
+		"success":    true,
+		"message":    "Genre inserted successfully",
+		"insertedID": result.InsertedID,
 	}, true)
 }
 
@@ -110,26 +108,18 @@ func Add(c *fiber.Ctx) error {
 // @Router       /genres/{id} [get]
 func Detail(c *fiber.Ctx) error {
 	var collection = models.GenreTable()
-	var genre models.Genre
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	objId, err := primitive.ObjectIDFromHex(c.Params("id"))
-	findResult := collection.FindOne(ctx, bson.M{"_id": objId})
+	id := c.Params("id")
 
-	if err := findResult.Err(); err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "Movie Not Found")
-	}
+	findResult, msg, code := utils.FindById(collection, id, bson.M{})
 
-	err = findResult.Decode(&genre)
-
-	log.Println("genre::", err)
-	if err != nil {
-		return utils.FailResponse(c, fiber.StatusNotFound, "Movie Not Found")
+	if code != 200 {
+		return utils.FailResponse(c, code, msg)
 	}
 
 	return utils.SuccessResponse(c, fiber.Map{
 		"success": true,
 		"message": "Success get data",
-		"data":    genre,
+		"data":    findResult,
 	}, false)
 }

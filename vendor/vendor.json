@@ -1,5 +1,11 @@
 {
 	"comment": "",
+	"heroku": {
+		"goVersion": "go1.17",
+		"install": [
+			"./..."
+		]
+	},
 	"ignore": "test",
 	"package": [
 		{
@@ -33,9 +39,5 @@
 			"revisionTime": "2022-02-14T19:20:43Z"
 		}
 	],
-	"rootPath": "github.com/agifsofyan/golang-fiber",
-	"heroku": {
-		"install" : [ "./..." ],
-		"goVersion": "go1.17"
-	}
+	"rootPath": "github.com/agifsofyan/golang-fiber"
 }

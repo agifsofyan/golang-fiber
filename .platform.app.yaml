@@ -1,0 +1,7 @@
+relationships:
+    mongodatabase: "dbmongo:mongodb"
+
+# If using PHP
+# runtime:
+#     extensions:
+#         - mongodb

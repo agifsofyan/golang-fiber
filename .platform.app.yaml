@@ -1,3 +1,12 @@
+# The app's name, which must be unique within the project.
+name: 'gorest'
+
+# The language and version for your app.
+type: 'go:1.13'
+
+# The size of the app's persistent disk (in MB).
+disk: 2048
+
 relationships:
     mongodatabase: "dbmongo:mongodb"
 

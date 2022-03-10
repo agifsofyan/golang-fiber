@@ -4,8 +4,11 @@ WORKDIR /app
 
 COPY ./ /app
 
-run go mod download -x
+ENV GOPATH=/go
+ENV PATH=${GOPATH}/bin:${PATH}
 
-run go get github.com/githubnemo/CompileDaemon
+RUN go mod download -x
+
+RUN go get github.com/githubnemo/CompileDaemon
 
 ENTRYPOINT CompileDaemon -exclude-dir=.git -exclude-dir=docs --build="go build main.go"

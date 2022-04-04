@@ -2,10 +2,14 @@ FROM golang:latest
 
 WORKDIR /app
 
-COPY ./ /app
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
 
-run go mod download -x
+COPY *.go ./
 
-run go get github.com/githubnemo/CompileDaemon
+RUN go build -o /fiber-golang
 
-ENTRYPOINT CompileDaemon -exclude-dir=.git -exclude-dir=docs --build="go build main.go"
+EXPOSE 8080
+
+CMD [ "/fiber-golang" ]

@@ -50,6 +50,6 @@ func ConnectDB() {
 
 	MI = MongoInstance{
 		Client: client,
-		DB:     client.Database(os.Getenv("DB")),
+		DB:     client.Database(os.Getenv("DBNAME")),
 	}
 }

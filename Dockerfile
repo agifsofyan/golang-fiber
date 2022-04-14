@@ -2,14 +2,13 @@ FROM golang:latest
 
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
+COPY go.mod go.sum .env ./
+RUN go mod download && go mod verify
 
-COPY *.go ./
+COPY . .
 
-RUN go build -o /fiber-golang
+RUN go build -o /gofiber
 
-EXPOSE 8080
+EXPOSE 3000
 
-CMD [ "/fiber-golang" ]
+CMD [ "gofiber" ]
